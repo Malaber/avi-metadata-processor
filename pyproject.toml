@@ -6,5 +6,5 @@ authors = ["Assistant"]
 
 [tool.poetry.dependencies]
 python = "^3.7"
-argparse
-pymediainfo
+argparse = "*"
+pymediainfo = "*"
