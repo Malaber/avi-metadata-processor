@@ -11,44 +11,32 @@ Okay.. Lets see if ChatGPT can write a summary of what it does.
 
 # avi-metadata-processor
 
-A command line utility for editing the metadata of AVI files.
+A tool for processing the metadata of AVI files, including setting the date and title from the filename.
 
 ## Features
 
-- Walk directories and process all AVI files found
-- Set the title field in the metadata to the first part of the filename
-- Parse the date/time from the second part of the filename and set it in the metadata
-- Perform a dry run to preview the changes that would have been made, without actually writing to the files
-
-## Usage
-
-```usage: avi-metadata.py [-h] [--dry-run] --root-dir ROOT_DIR
-
-A command line utility for editing the metadata of AVI files.
-
-optional arguments:
--h, --help            show this help message and exit
---dry-run             Perform a dry run, printing the changes that would have been made but not actually writing them to
-```
+- Set the date/time of an AVI file from the filename
+- Set the title of an AVI file from the filename
+- Option to enable a dry run mode, where the script will only print the actions it would have taken, without modifying any files
 
 ## Installation
 
-This project requires Python 3.7 or higher. To install the dependencies using Poetry, run the following command:
+Install the dependencies for the `avi-metadata-processor` project using [Poetry](https://python-poetry.org/):
 
-```poetry install```
+```bash
+poetry install
+```
 
-## Examples
+## Usage
 
-Process all AVI files in the current directory and write the changes to the files:
+Run the `avi-metadata-processor` script using Poetry:
 
-```python avi-metadata.py --root-dir .```
+```bash
+poetry run python avi-metadata-processor.py --root-dir /path/to/avi/files --dry-run
+```
 
-Perform a dry run to preview the changes that would have been made, without actually writing to the files:
-
-```python avi-metadata.py --dry-run --root-dir .```
+The `--root-dir` argument specifies the root directory to search for AVI files, and the `--dry-run` flag enables the dry run mode.
 
 ## Credits
 
-This project was developed by [Assistant](https://openai.com/blog/introducing-assistant/), a large language model developed by OpenAI.
-
-I hope this helps! Let me know if you have any further questions.
+- This project was created using the [OpenAI GPT-3](https://openai.com/blog/openai-api-now-includes-gpt-3/) language model.
