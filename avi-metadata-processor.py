@@ -1,55 +1,67 @@
 import os
-import mutagen
-from mutagen.avi import AVIMetaData
-from datetime import datetime
 import argparse
+import pymediainfo
 
-# Set up command line arguments
-parser = argparse.ArgumentParser()
-parser.add_argument("--dry-run", action="store_true", help="Perform a dry run, printing the changes that would have been made but not actually writing them to the files")
-parser.add_argument("--root-dir", required=True, help="The root directory to walk and process AVI files")
-args = parser.parse_args()
+def set_metadata(file_path, date, title):
+    # Open the AVI file using pymediainfo
+    mi = pymediainfo.MediaInfo.parse(file_path)
 
-# Set the date/time format to use when parsing the filenames
-date_time_format = "%y-%m-%d_%H-%M.%S"
+    # Get the first track (there should only be one track in an AVI file)
+    track = mi.tracks[0]
 
-# Walk the directories and process the AVI files
-for root, dirs, files in os.walk(args.root_dir):
-    for filename in files:
-        # Check if the file is an AVI file
-        if filename.endswith(".avi"):
-            # Open the AVI file and read its metadata
-            avi_file = mutagen.open(os.path.join(root, filename))
-            metadata = avi_file.tags
+    # Set the title of the AVI file
+    track.title = title
 
-            # Split the filename into parts
-            parts = filename.split(".")
-            if len(parts) < 2:
-                print(f"Failed to parse title and date/time from filename {filename}")
-                continue
+    # Set the date/time of the AVI file
+    track.recorded_date = date
 
-            # Set the title to the first part of the filename
-            metadata["TITLE"] = parts[0]
+    # Save the modified metadata to the AVI file
+    track.to_data()
 
-            # Parse the date/time from the second part of the filename
-            try:
-                date_time = datetime.strptime(parts[1], date_time_format)
-            except ValueError:
-                print(f"Failed to parse date/time from filename {filename}")
-                continue
+def parse_filename(filename):
+    # Split the filename into parts
+    parts = filename.split('.')
 
-            # Convert the datetime object to a string in the desired format
-            date_time_str = datetime.strftime(date_time, "%Y-%m-%d %H:%M:%S")
+    # The date/time is the first part of the filename
+    date_time_str = parts[0]
 
-            # Set the date/time to the metadata
-            metadata["DATE"] = date_time_str
+    # The title is the second part of the filename
+    title = parts[1]
 
-            # Print the changes that would have been made or indicate that the changes will be written to the files
-            if args.dry_run:
-                print(f"Would have set title to '{metadata['TITLE']}' and date/time to '{metadata['DATE']}' for file {os.path.join(root, filename)}")
-            else:
-                print(f"Setting title to '{metadata['TITLE']}' and date/time to '{metadata['DATE']}' for file {os.path.join(root, filename)}")
+    # Parse the date/time string
+    date, time = date_time_str.split('_')
+    year, month, day = date.split('-')
+    hour, minute, second = time.split('-')
 
-            # Save the changes to the file (if not performing a dry run)
-            if not args.dry_run:
-                avi_file.save()
+    # Format the date/time as an ISO 8601 string
+    date_time = f"{year}-{month}-{day}T{hour}:{minute}:{second}Z"
+
+    return date_time, title
+
+def process_files(root_dir, dry_run):
+    # Walk the directories and process the AVI files
+    for root, dirs, files in os.walk(root_dir):
+        for file in files:
+            if file.endswith('.avi'):
+                file_path = os.path.join(root, file)
+
+                # Parse the filename to get the date/time and title
+                date, title = parse_filename(file)
+
+                if dry_run:
+                    # In dry run mode, print the actions that would be taken
+                    print(f"Would have set the date/time of {file_path} to {date} and the title to {title}")
+                else:
+                    # Set the metadata of the AVI file
+                    set_metadata(file_path, date, title)
+                    print(f"Set the date/time of {file_path} to {date} and the title to {title}")
+
+if __name__ == '__main__':
+    # Parse the command-line arguments
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--root-dir', required=True, help='Root directory to search for AVI files')
+    parser.add_argument('--dry-run', action='store_true', help='Enable dry run mode')
+    args = parser.parse_args()
+
+    # Process the AVI files
+    process_files(args.root_dir, args.dry_run)
