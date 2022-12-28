@@ -27,7 +27,7 @@ def process_metadata(root_dir, dry_run=False):
 
             # Set the date/time and title to the metadata
             filepath = os.path.join(root, filename)
-            audio = mutagen.AVI(filepath)
+            audio = mutagen.File(filepath)
             audio["date"] = record_date.strftime("%Y-%m-%d %H:%M:%S")
             audio["title"] = title
 
@@ -41,7 +41,7 @@ def process_metadata(root_dir, dry_run=False):
 def main():
     # Parse the command-line arguments
     parser = argparse.ArgumentParser()
-    parser.add_argument("root_dir", help="the root directory to search for AVI files")
+    parser.add_argument("--root-dir", help="the root directory to search for AVI files")
     parser.add_argument("--dry-run", action="store_true", help="perform a dry run, printing the changes that would be made but not actually modifying the files")
     args = parser.parse_args()
 
