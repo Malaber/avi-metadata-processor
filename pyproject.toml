@@ -1,13 +1,10 @@
 [tool.poetry]
 name = "avi-metadata-processor"
 version = "0.1.0"
-description = "A tool for processing the metadata of AVI files, including setting the date and title from the filename"
-authors = ["Your Name <your@email.com>"]
+description = "A tool for processing the metadata of AVI files, including setting the date and title from the filename."
+authors = ["Assistant"]
 
 [tool.poetry.dependencies]
 python = "^3.7"
-argparse = "*"
-datetime = "*"
-mutagen = "*"
-
-[tool.poetry.dev-dependencies]
+argparse
+pymediainfo
